@@ -137,7 +137,10 @@ const getDateParts = (
 
   const customLocalize = setupCustomlocalize(hass);
   const days = daysTill(new Date(), item.date.start);
-  const counterText = getBadgeText(days, customLocalize);
+  // Prefer full phrases ("in 15 Tagen") for readability; keep short labels for today/tomorrow.
+  const counterText = days === 0 || days === 1 ?
+    getBadgeText(days, customLocalize) :
+    getCounterString(item, customLocalize, undefined, undefined, true);
 
   const today = new Date();
   const tomorrow = new Date();

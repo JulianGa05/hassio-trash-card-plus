@@ -57,18 +57,39 @@ class Cards extends LitElement implements BaseContainerElement {
     `;
   }
 
+  private isCompactLayoutActive (): boolean {
+    if (!this.config) {
+      return false;
+    }
+
+    if (this.config.info_layout === 'compact') {
+      return true;
+    }
+
+    return Boolean(this.config.mobile_compact) && window.matchMedia('(max-width: 600px)').matches;
+  }
+
+  /** Compact needs readable text — never more than two columns. */
+  private resolveColumns (desired: number): number {
+    const capped = Math.max(1, desired);
+
+    return this.isCompactLayoutActive() ? Math.min(capped, 2) : capped;
+  }
+
   private gridStyle (columns: number) {
+    const resolved = this.resolveColumns(columns);
+
     return styleMap({
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      'grid-template-columns': `repeat(${columns}, minmax(0, 1fr))`,
+      'grid-template-columns': `repeat(${resolved}, minmax(0, 1fr))`,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      '--mobile-columns': `${Math.min(columns, 2)}`
+      '--mobile-columns': `${Math.min(resolved, 2)}`
     });
   }
 
   private renderItemGrid (items: CalendarItem[], columns: number) {
     return html`
-      <div style=${this.gridStyle(columns)} class="card-container">
+      <div style=${this.gridStyle(columns)} class="card-container ${this.isCompactLayoutActive() ? 'compact-grid' : ''}">
         ${items.map((item, idx) => this.renderCard(item, `card-${idx}-${item.content.uid ?? item.content.summary}`))}
       </div>
     `;
@@ -81,6 +102,17 @@ class Cards extends LitElement implements BaseContainerElement {
   ) {
     // Skip completely empty groups only when they would create blank trailing columns
     // Keep alignment: same group keys/order for past & future sections
+    const compact = this.isCompactLayoutActive();
+    const resolved = this.resolveColumns(columns);
+    // In compact mode flatten pattern columns into a simple 2-col grid (no empty pattern slots)
+    const flatItems = compact ?
+      groups.flatMap(group => group.items) :
+      undefined;
+
+    if (flatItems) {
+      return this.renderItemGrid(flatItems, resolved);
+    }
+
     return html`
       <div style=${this.gridStyle(columns)} class="card-container pattern-grid">
         ${groups.map(group => html`
@@ -113,10 +145,10 @@ class Cards extends LitElement implements BaseContainerElement {
       const allGroups = groupItemsByPattern(this.items, this.config.pattern);
       // Pattern mode: default to one column per pattern (unless user set columns explicitly > 1)
       const configured = this.config.items_per_row;
-      const columns = Math.min(
+      const columns = this.resolveColumns(Math.min(
         allGroups.length,
         Math.max(1, configured && configured > 1 ? configured : allGroups.length)
-      );
+      ));
 
       const pastGroups = allGroups.map(group => ({
         key: group.key,

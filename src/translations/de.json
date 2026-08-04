@@ -47,7 +47,7 @@
             },
             "info_layout": {
                 "title": "Karteninformationen",
-                "helper": "Standard zeigt bei „Datum und Tage bis“ den Counter groß rechts. Kompakt zeigt oben Bezeichnung und Counter, darunter das Datum.",
+                "helper": "Standard zeigt bei „Datum und Tage bis“ den Counter groß rechts. Kompakt zeigt zwei Zeilen (Bezeichnung + Counter / Datum) und höchstens zwei Spalten — sonst wird der Text unleserlich.",
                 "values": {
                     "standard": "Standard",
                     "compact": "Kompakt (zwei Zeilen)"

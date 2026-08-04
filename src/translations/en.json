@@ -47,7 +47,7 @@
             },
             "info_layout": {
                 "title": "Card information",
-                "helper": "Standard shows a large right-aligned counter for “Date and days to”. Compact shows the label and counter above the date.",
+                "helper": "Standard shows a large right-aligned counter for “Date and days to”. Compact uses two lines (label + counter / date) and at most two columns so the text stays readable.",
                 "values": {
                     "standard": "Standard",
                     "compact": "Compact (two lines)"
