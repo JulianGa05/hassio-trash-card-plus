@@ -1,6 +1,6 @@
 import { css, html, nothing } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
-import { getDateString } from '../../../utils/getDateString';
+import { getDateParts } from '../../../utils/getDateString';
 import { customElement } from 'lit/decorators.js';
 import { TRASH_CARD_NAME } from '../const';
 import { defaultHaCardStyle } from '../../../utils/defaultHaCardStyle';
@@ -19,7 +19,7 @@ class ItemCard extends BaseItemElement {
     // eslint-disable-next-line prefer-destructuring
     const item = this.item;
 
-    const { color_mode, hide_time_range, day_style, layout, with_label, day_style_format } = this.config;
+    const { color_mode, hide_time_range, day_style, layout, with_label, day_style_format, mobile_compact } = this.config;
 
     const { label, date } = item;
 
@@ -27,19 +27,34 @@ class ItemCard extends BaseItemElement {
       ...getColoredStyle(color_mode, item, this.parentElement, this.hass.themes.darkMode)
     };
 
-    const content = getDateString(item, hide_time_range ?? false, day_style, day_style_format, this.hass);
+    const compactMobile = Boolean(mobile_compact) && window.matchMedia('(max-width: 600px)').matches;
+    const parts = getDateParts(
+      item,
+      hide_time_range ?? false,
+      day_style,
+      day_style_format,
+      this.hass,
+      compactMobile
+    );
+    const content = parts.splitCounter ? parts.dateLabel : parts.fullLabel;
 
-    const daysTillToday = Math.abs(daysTill(new Date(), date.start));
+    const daysTillToday = daysTill(new Date(), date.start);
 
     const cssClasses = {
       today: daysTillToday === 0,
       tomorrow: daysTillToday === 1,
-      another: daysTillToday > 1
+      another: daysTillToday > 1,
+      past: Boolean(item.isPast) || daysTillToday < 0,
+      'with-counter': parts.splitCounter,
+      'compact-mobile': compactMobile
     };
 
     const pictureUrl = this.getPictureUrl();
 
-    const contentClasses = { vertical: layout === 'vertical' };
+    const contentClasses = {
+      vertical: layout === 'vertical',
+      'with-counter': parts.splitCounter
+    };
 
     return html`
       <ha-card style=${styleMap(style)} class=${classMap(cssClasses)}>
@@ -53,6 +68,9 @@ class ItemCard extends BaseItemElement {
               .secondary=${with_label ? content : undefined}
               .multiline=${true}
             ></ha-tile-info>
+            ${parts.splitCounter ? html`
+              <div class="counter-badge" aria-hidden="true">${parts.counterText}</div>
+            ` : nothing}
           </div>
         </div>
       </ha-card>
@@ -66,6 +84,11 @@ class ItemCard extends BaseItemElement {
 
         :host {
           -webkit-tap-highlight-color: transparent;
+          display: block;
+          width: 100%;
+          min-width: 0;
+          max-width: 100%;
+          box-sizing: border-box;
         }
 
         ha-card {
@@ -73,12 +96,19 @@ class ItemCard extends BaseItemElement {
           --ha-ripple-hover-opacity: 0.04;
           --ha-ripple-pressed-opacity: 0.12;
           height: 100%;
+          width: 100%;
+          max-width: 100%;
+          overflow: hidden;
           transition:
             box-shadow 180ms ease-in-out,
             border-color 180ms ease-in-out;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
+        }
+
+        ha-card.past {
+          opacity: 0.68;
         }
 
         .background {
@@ -96,23 +126,60 @@ class ItemCard extends BaseItemElement {
           display: flex;
           flex-direction: column;
           flex: 1;
+          min-width: 0;
         }
         .content {
           position: relative;
           display: flex;
           flex-direction: row;
           align-items: center;
-          padding: 10px;
+          padding: 10px 12px;
           flex: 1;
           min-width: 0;
           box-sizing: border-box;
           pointer-events: none;
           gap: 10px;
         }
+        .content.with-counter ha-tile-info {
+          flex: 1 1 auto;
+          min-width: 0;
+        }
+        .counter-badge {
+          flex: 0 0 auto;
+          margin-left: 4px;
+          padding: 2px 0;
+          font-size: 1.05em;
+          font-weight: 650;
+          line-height: 1.2;
+          white-space: nowrap;
+          opacity: 0.95;
+        }
+        @media (max-width: 600px) {
+          ha-card.compact-mobile .content {
+            gap: 8px;
+            min-height: 42px;
+            padding: 7px 9px;
+          }
+          ha-card.compact-mobile ha-tile-icon {
+            transform: scale(0.85);
+            transform-origin: center;
+          }
+          ha-card.compact-mobile ha-tile-info {
+            font-size: 0.9em;
+          }
+          ha-card.compact-mobile .counter-badge {
+            font-size: 0.93em;
+            margin-left: 0;
+          }
+        }
         .vertical {
           flex-direction: column;
           text-align: center;
           justify-content: center;
+        }
+
+        .vertical .counter-badge {
+          margin-left: 0;
         }
 
         .vertical ha-tile-info {
@@ -130,6 +197,7 @@ class ItemCard extends BaseItemElement {
           position: relative;
           padding: 6px;
           margin: -6px;
+          flex: 0 0 auto;
         }
 
         hui-image {

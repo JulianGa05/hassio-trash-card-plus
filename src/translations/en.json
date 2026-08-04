@@ -12,7 +12,9 @@
                     "default": "Date",
                     "counter": "days to",
                     "weekday": "Day of the week",
-                    "custom": "Custom date format"
+                    "custom": "Custom date format",
+                    "date_and_counter": "Date and days to",
+                    "weekday_and_counter": "Weekday and days to"
                 }
             },
             "day_style_format": {
@@ -50,6 +52,15 @@
                     "horizontal": "Horizontal layout"
                 }
             },
+            "sort_by": {
+                "title": "Sort / arrangement",
+                "helper": "By date is chronological. Pattern-sorted grid groups trash types while keeping a regular grid. Pattern columns puts each trash type into its own column.",
+                "values": {
+                    "date": "By date",
+                    "pattern": "By pattern (columns)",
+                    "pattern_grid": "Pattern-sorted grid"
+                }
+            },
             "tabs": {
                 "settings": "Settings",
                 "appearance": "Appearance",
@@ -74,12 +85,21 @@
                 "layout": "Layout",
                 "fill_container": "Fill container",
                 "next_days": "Days in the future",
+                "past_days": "Days in the past",
+                "past_days_description": "How far back to look for the last collection per pattern.",
+                "include_last_past": "Show last collection per pattern",
+                "include_last_past_description": "Also shows the most recent past event for each trash pattern.",
                 "filter_events": "Filter events by patterns",
                 "drop_todayevents_from": "From what time to hide all-day event",
                 "full_size": "Card without margin",
                 "use_summary": "Event summary instead of label",
                 "hide_time_range": "Hide time",
                 "event_grouping": "Only display the next event per pattern",
+                "events_per_pattern": "Events per pattern",
+                "events_per_pattern_description": "How many upcoming events to show per trash pattern. 1 = next only, 2+ = several, 0 = all events in range.",
+                "items_per_row_pattern_description": "Number of pattern columns in the grid. Each column stacks events for one trash type.",
+                "mobile_compact": "Compact mobile view",
+                "mobile_compact_description": "Use a space-saving, one-column presentation with shorter dates on narrow screens.",
                 "icon_size": "Icon size",
                 "with_label": "Show label"
             },
@@ -133,7 +153,19 @@
             "daysleftend": "ends in <DAYS> day",
             "daysleftend_more": "ends in <DAYS> days",
             "daysleftend_till": "ends in <DAYS> day\nat <END>",
-            "daysleftend_more_till": "ends in <DAYS> days\nat <END>"
+            "daysleftend_more_till": "ends in <DAYS> days\nat <END>",
+            "daysago": "<DAYS> day ago",
+            "daysago_more": "<DAYS> days ago",
+            "badge_day": "day",
+            "badge_days": "days",
+            "badge_ago_day": "ago",
+            "badge_ago_days": "ago",
+            "badge_ago": "<DAYS> ago",
+            "badge_ago_one": "1 ago",
+            "badge_in": "in <DAYS> days",
+            "badge_in_one": "in 1 day",
+            "section_past": "Last collected",
+            "section_upcoming": "Upcoming"
         }
     }
 }

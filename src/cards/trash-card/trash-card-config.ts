@@ -19,7 +19,9 @@ const DAYSTYLES = [
   'default',
   'counter',
   'weekday',
-  'custom'
+  'custom',
+  'date_and_counter',
+  'weekday_and_counter'
 ] as const;
 
 const CARDSTYLES = [
@@ -40,18 +42,42 @@ const COLORMODES = [
   'icon'
 ] as const;
 
+const SORTMODES = [
+  'date',
+  'pattern',
+  'pattern_grid'
+] as const;
+
 interface TrashCardConfig {
   entities?: string[];
   pattern?: ItemSettings[];
   location?: string;
   next_days?: number;
+  /** How many days to look into the past when `include_last_past` is enabled. */
+  past_days?: number;
   items_per_row?: number;
   filter_events?: boolean;
   full_size?: boolean;
   drop_todayevents_from?: string;
   use_summary?: boolean;
   hide_time_range?: boolean;
+  /**
+   * @deprecated Use `events_per_pattern` instead.
+   * Kept for backwards compatibility: true → 1, false → 0 (all).
+   */
   event_grouping?: boolean;
+  /**
+   * How many upcoming events to show per pattern/type.
+   * `0` = show all events in range (no per-pattern limit).
+   * Default: `1` (same as former `event_grouping: true`).
+   */
+  events_per_pattern?: number;
+  /** Also show the most recent past collection per pattern. */
+  include_last_past?: boolean;
+  /** Sort/layout: chronological, grouped columns, or pattern-ordered grid. */
+  sort_by?: typeof SORTMODES[number];
+  /** Use a denser, single-column presentation on narrow screens. */
+  mobile_compact?: boolean;
   day_style?: typeof DAYSTYLES[number];
   day_style_format?: string;
   card_style?: typeof CARDSTYLES[number];
@@ -84,11 +110,27 @@ const entityCardConfigStruct = assign(
     use_summary: optional(boolean()),
     hide_time_range: optional(boolean()),
     next_days: optional(integer()),
+    past_days: optional(integer()),
     items_per_row: optional(integer()),
     refresh_rate: optional(integer()),
     drop_todayevents_from: optional(string()),
     event_grouping: optional(boolean()),
-    day_style: optional(union([ literal(DAYSTYLES[0]), literal(DAYSTYLES[1]), literal(DAYSTYLES[2]), literal(DAYSTYLES[3]) ])),
+    events_per_pattern: optional(integer()),
+    include_last_past: optional(boolean()),
+    sort_by: optional(union([
+      literal(SORTMODES[0]),
+      literal(SORTMODES[1]),
+      literal(SORTMODES[2])
+    ])),
+    mobile_compact: optional(boolean()),
+    day_style: optional(union([
+      literal(DAYSTYLES[0]),
+      literal(DAYSTYLES[1]),
+      literal(DAYSTYLES[2]),
+      literal(DAYSTYLES[3]),
+      literal(DAYSTYLES[4]),
+      literal(DAYSTYLES[5])
+    ])),
     day_style_format: optional(string()),
     card_style: optional(union([ literal(CARDSTYLES[0]), literal(CARDSTYLES[1]), literal(CARDSTYLES[2]) ])),
     alignment_style: optional(union([ literal(ALIGNMENTSTYLES[0]), literal(ALIGNMENTSTYLES[1]), literal(ALIGNMENTSTYLES[2]), literal(ALIGNMENTSTYLES[3]) ])),
@@ -118,7 +160,8 @@ export {
   CARDSTYLES,
   ALIGNMENTSTYLES,
   LAYOUTS,
-  LAYOUT_ICONS
+  LAYOUT_ICONS,
+  SORTMODES
 };
 
 export type {

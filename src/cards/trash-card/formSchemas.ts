@@ -1,4 +1,4 @@
-import { CARDSTYLES, ALIGNMENTSTYLES, COLORMODES, DAYSTYLES, LAYOUTS, LAYOUT_ICONS } from './trash-card-config';
+import { CARDSTYLES, ALIGNMENTSTYLES, COLORMODES, DAYSTYLES, LAYOUTS, LAYOUT_ICONS, SORTMODES } from './trash-card-config';
 
 import type { LocalizeFunc } from '../../utils/ha';
 import type { TrashCardConfig } from './trash-card-config';
@@ -93,6 +93,27 @@ const getSchema = (customLocalize: LocalizeFunc, currentValues: TrashCardConfig,
             }
           }
         },
+        {
+          name: 'include_last_past',
+          label: customLocalize(`editor.card.generic.include_last_past`),
+          helper: customLocalize(`editor.card.generic.include_last_past_description`),
+          selector: { boolean: {}}
+        },
+        ...currentValues.include_last_past ?
+          [{
+            name: 'past_days',
+            label: customLocalize(`editor.card.generic.past_days`),
+            helper: customLocalize(`editor.card.generic.past_days_description`),
+            selector: {
+              number: {
+                min: 1,
+                max: 365,
+                step: 1,
+                mode: 'box'
+              }
+            }
+          }] as HaFormSchema[] :
+          [],
         {
           name: 'refresh_rate',
           label: customLocalize(`editor.form.refresh_rate.title`),
@@ -208,9 +229,17 @@ const getSchema = (customLocalize: LocalizeFunc, currentValues: TrashCardConfig,
           [],
         ...currentValues.card_style === 'card' || currentValues.card_style === 'chip' ?
           [{
-            name: 'event_grouping',
-            label: customLocalize(`editor.card.generic.event_grouping`),
-            selector: { boolean: { default: true }}
+            name: 'events_per_pattern',
+            label: customLocalize(`editor.card.generic.events_per_pattern`),
+            helper: customLocalize(`editor.card.generic.events_per_pattern_description`),
+            selector: {
+              number: {
+                min: 0,
+                max: 30,
+                step: 1,
+                mode: 'box'
+              }
+            }
           }] as HaFormSchema[] :
           [],
         ...currentValues.card_style === 'card' || currentValues.card_style === 'chip' ?
@@ -226,6 +255,14 @@ const getSchema = (customLocalize: LocalizeFunc, currentValues: TrashCardConfig,
                 mode: 'dropdown'
               }
             }
+          }] as HaFormSchema[] :
+          [],
+        ...currentValues.card_style === 'card' ?
+          [{
+            name: 'mobile_compact',
+            label: customLocalize(`editor.card.generic.mobile_compact`),
+            helper: customLocalize(`editor.card.generic.mobile_compact_description`),
+            selector: { boolean: {}}
           }] as HaFormSchema[] :
           []
       ]
@@ -248,6 +285,20 @@ const getSchema = (customLocalize: LocalizeFunc, currentValues: TrashCardConfig,
                 mode: 'dropdown'
               }
             }
+          },
+          {
+            name: 'sort_by',
+            label: customLocalize(`editor.form.sort_by.title`),
+            helper: customLocalize(`editor.form.sort_by.helper`),
+            selector: {
+              select: {
+                options: [ ...SORTMODES ].map(mode => ({
+                  value: mode,
+                  label: customLocalize(`editor.form.sort_by.values.${mode}`)
+                })),
+                mode: 'dropdown'
+              }
+            }
           }
         ]
       },
@@ -264,6 +315,9 @@ const getSchema = (customLocalize: LocalizeFunc, currentValues: TrashCardConfig,
           {
             name: 'items_per_row',
             label: localize(`ui.panel.lovelace.editor.card.grid.columns`),
+            helper: currentValues.sort_by === 'pattern' ?
+              customLocalize(`editor.card.generic.items_per_row_pattern_description`) :
+              undefined,
             selector: { number: {
               min: 1,
               max: 6,

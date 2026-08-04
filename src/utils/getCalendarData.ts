@@ -1,12 +1,15 @@
 import { eventsToItems } from './eventsToItems';
 import { findActiveEvents } from './findActiveEvents';
+import { findLastPastEvents } from './findLastPastEvents';
 import { normaliseEvents } from './normaliseEvents';
 import { filterDuplicatedItems } from './filterDuplicatedItems';
+import { sortItems } from './sortItems';
 
 import type { Debugger } from './debugger';
 import type { HomeAssistant } from './ha';
 import type { RawCalendarEvent } from './calendarEvents';
 import type { TrashCardConfig } from '../cards/trash-card/trash-card-config';
+import type { CalendarItem } from './calendarItem';
 
 const fetchData = async (
   hass: HomeAssistant,
@@ -54,14 +57,16 @@ const getCalendarData = async (
     debuggerInstance.log(`location filtering`, config.location);
   }
 
+  const filterConfig = {
+    pattern: config.pattern!,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    filter_events: config.filter_events,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    only_all_day_events: config.only_all_day_events
+  };
+
   const activeEvents = findActiveEvents(normalisedEvents, {
-    config: {
-      pattern: config.pattern!,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      filter_events: config.filter_events,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      only_all_day_events: config.only_all_day_events
-    },
+    config: filterConfig,
     dropAfter,
     now,
     location: config.location,
@@ -70,16 +75,48 @@ const getCalendarData = async (
 
   debuggerInstance.log(`activeElements`, activeEvents);
 
-  const eventItems = eventsToItems(activeEvents, {
+  const upcomingItems = eventsToItems(activeEvents, {
     pattern: config.pattern!,
     useSummary: Boolean(config.use_summary)
   });
 
-  debuggerInstance.log(`eventsToItems`, eventItems);
+  debuggerInstance.log(`eventsToItems`, upcomingItems);
 
-  return !config.event_grouping ?
-    eventItems :
-    filterDuplicatedItems(eventItems);
+  const eventsPerPattern = config.events_per_pattern ??
+    (config.event_grouping === false ? 0 : 1);
+
+  let items: CalendarItem[] = filterDuplicatedItems(upcomingItems, eventsPerPattern);
+
+  if (config.include_last_past) {
+    const pastEvents = findLastPastEvents(normalisedEvents, {
+      config: filterConfig,
+      now,
+      location: config.location
+    });
+
+    debuggerInstance.log(`lastPastEvents`, pastEvents);
+
+    const pastItems = eventsToItems(pastEvents, {
+      pattern: config.pattern!,
+      useSummary: Boolean(config.use_summary)
+    }).map(item => ({
+      ...item,
+      isPast: true
+    }));
+
+    // Avoid duplicating an event that is already in the upcoming list
+    const upcomingKeys = new Set(
+      items.map(item => `${item.type}|${item.date.start.toISOString()}|${item.content.summary}`)
+    );
+
+    const uniquePast = pastItems.filter(
+      item => !upcomingKeys.has(`${item.type}|${item.date.start.toISOString()}|${item.content.summary}`)
+    );
+
+    items = [ ...uniquePast, ...items ];
+  }
+
+  return sortItems(items, config.sort_by ?? 'date', config.pattern);
 };
 
 export {

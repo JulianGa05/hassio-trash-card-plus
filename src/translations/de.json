@@ -12,7 +12,9 @@
                     "default": "Datum",
                     "counter": "Tage bis",
                     "weekday": "Wochentag",
-                    "custom": "Eigenes Datumsformat"
+                    "custom": "Eigenes Datumsformat",
+                    "date_and_counter": "Datum und Tage bis",
+                    "weekday_and_counter": "Wochentag und Tage bis"
                 }
             },
             "day_style_format": {
@@ -50,6 +52,15 @@
                     "horizontal": "Horizontales Layout"
                 }
             },
+            "sort_by": {
+                "title": "Sortierung / Anordnung",
+                "helper": "Nach Datum ist chronologisch. Nach Vorlage sortiertes Raster gruppiert die Müllarten, bleibt aber ein normales Grid. Vorlagenspalten bündelt jede Müllart in einer eigenen Spalte.",
+                "values": {
+                    "date": "Nach Datum",
+                    "pattern": "Nach Vorlage (Spalten)",
+                    "pattern_grid": "Nach Vorlage sortiertes Raster"
+                }
+            },
             "tabs": {
                 "settings": "Einstellungen",
                 "appearance": "Darstellung",
@@ -58,6 +69,14 @@
             "refresh_rate": {
                 "title": "Aktualisierungsintervall",
                 "helper": "Prüfung aller x Minuten auf Änderungen im Kalender."
+            },
+            "location": {
+                "title": "Standort",
+                "helper": "Ereignisse nach Standort filtern. Leer = alle."
+            },
+            "only_all_day_events": {
+                "title": "Nur Ganztagesereignisse",
+                "helper": "Wenn aktiv, werden nur ganztägige Kalendereinträge verwendet."
             }
         },
         "card": {
@@ -66,12 +85,21 @@
                 "layout": "Layout",
                 "fill_container": "Container ausfüllen",
                 "next_days": "Tage in der Zukunft",
+                "past_days": "Tage in der Vergangenheit",
+                "past_days_description": "Wie weit zurückgesucht wird, um die letzte Leerung je Vorlage zu finden.",
+                "include_last_past": "Letzte Leerung je Vorlage anzeigen",
+                "include_last_past_description": "Zeigt zusätzlich den jeweils letzten vergangenen Termin je Müll-Vorlage an.",
                 "filter_events": "Ereignisse nach Vorlagen filtern",
                 "drop_todayevents_from": "Ab wieviel Uhr Ganztages Ereignis ausblenden",
                 "full_size": "Karte ohne Seitenrand",
                 "use_summary": "Ereignisbezeichnung anstelle des Lables verwenden",
                 "hide_time_range": "Uhrzeit ausblenden",
                 "event_grouping": "Nur das nächste Ereignis je Vorlage anzeigen",
+                "events_per_pattern": "Ereignisse je Vorlage",
+                "events_per_pattern_description": "Wie viele nächste Termine je Müll-Vorlage angezeigt werden. 1 = nur der nächste, 2+ = mehrere, 0 = alle Termine im Zeitraum.",
+                "items_per_row_pattern_description": "Anzahl der Vorlage-Spalten im Raster. Jede Spalte enthält die Termine einer Müllart untereinander.",
+                "mobile_compact": "Kompakte Mobilansicht",
+                "mobile_compact_description": "Auf schmalen Bildschirmen eine platzsparende, einspaltige Ansicht mit kürzerem Datum verwenden.",
                 "icon_size": "Icongröße",
                 "with_label": "Bezeichnung anzeigen"
             },
@@ -117,6 +145,19 @@
             "daysleftend": "endet in <DAYS> Tag",
             "daysleftend_more": "endet in <DAYS> Tagen",
             "daysleftend_till": "endet in <DAYS> Tag\num <END> Uhr",
-            "daysleftend_more_till": "endet in <DAYS> Tagen\num <END> Uhr"        }
+            "daysleftend_more_till": "endet in <DAYS> Tagen\num <END> Uhr",
+            "daysago": "vor <DAYS> Tag",
+            "daysago_more": "vor <DAYS> Tagen",
+            "badge_day": "Tag",
+            "badge_days": "Tage",
+            "badge_ago_day": "vor",
+            "badge_ago_days": "vor",
+            "badge_ago": "vor <DAYS> Tagen",
+            "badge_ago_one": "vor 1 Tag",
+            "badge_in": "in <DAYS> Tagen",
+            "badge_in_one": "in 1 Tag",
+            "section_past": "Zuletzt geleert",
+            "section_upcoming": "Demnächst"
+        }
     }
 }

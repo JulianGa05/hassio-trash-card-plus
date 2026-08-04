@@ -34,7 +34,15 @@ declare global {
 
 const configDefaults = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  event_grouping: true,
+  events_per_pattern: 1,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  include_last_past: false,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  past_days: 60,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  sort_by: 'date',
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  mobile_compact: false,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   drop_todayevents_from: '10:00:00',
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -91,9 +99,16 @@ class TrashCardEditor extends LitElement {
   public setConfig (config: Partial<TrashCardConfig>): void {
     assert(config, entityCardConfigStruct);
 
+    const migrated = { ...config };
+
+    // Show numeric field for legacy `event_grouping` configs
+    if (migrated.events_per_pattern === undefined && migrated.event_grouping !== undefined) {
+      migrated.events_per_pattern = migrated.event_grouping === false ? 0 : 1;
+    }
+
     this.config = {
       ...configDefaults,
-      ...config
+      ...migrated
     } as TrashCardConfig;
   }
 
@@ -307,6 +322,31 @@ class TrashCardEditor extends LitElement {
 
     if (config.layout === 'default') {
       delete config.layout;
+    }
+
+    if (config.sort_by === 'date') {
+      delete config.sort_by;
+    }
+
+    if (!config.mobile_compact) {
+      delete config.mobile_compact;
+    }
+
+    if (!config.include_last_past) {
+      delete config.include_last_past;
+      delete config.past_days;
+    } else if (config.past_days === 60) {
+      delete config.past_days;
+    }
+
+    // Migrate legacy boolean → numeric limit; drop obsolete key from saved config
+    if (config.events_per_pattern === undefined && config.event_grouping !== undefined) {
+      config.events_per_pattern = config.event_grouping === false ? 0 : 1;
+    }
+    delete config.event_grouping;
+
+    if (config.events_per_pattern === 1) {
+      delete config.events_per_pattern;
     }
 
     fireEvent(this, 'config-changed', { config });

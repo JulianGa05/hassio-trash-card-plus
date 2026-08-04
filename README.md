@@ -98,6 +98,17 @@ The TrashCard cards can be configured using the Dashboard UI editor.
 
 All the options listed below are available in the lovelace editor, but configuring via `yaml` is supported too.
 
+### Custom enhancements in this fork
+
+This fork extends the upstream card with:
+
+- Combined date and countdown display (`date_and_counter` / `weekday_and_counter`)
+- A configurable number of upcoming events per pattern (`events_per_pattern`)
+- The most recent past collection per pattern (`include_last_past`)
+- Clear separation of past and upcoming collections
+- Chronological, pattern-column, and pattern-sorted grid layouts (`sort_by`)
+- An optional compact single-column view on narrow screens (`mobile_compact`)
+
 | Name                | Type                                                | Default     | Description                                                                         |
 | :------------------ | :-------------------------------------------------- | :---------- | :---------------------------------------------------------------------------------- |
 | `entities`            | array of strings                                              | Required    | The calendar(s) containing the collection events.                        |
@@ -109,8 +120,13 @@ All the options listed below are available in the lovelace editor, but configuri
 | `use_summary`         | boolean                                             | `false`     | Shows the event summary instead of matched label. |
 | `hide_time_range`         | boolean                                             | `false`     | Option to hide the time on events that aren't full day events. |
 | `event_grouping`         | boolean                                             | `true`     | Only display the next event per pattern, otherwise all events during the selected time will be displayed.  |
+| `events_per_pattern` | number | `1` | How many upcoming events to display per pattern. `0` shows all events in range. Supersedes `event_grouping`. |
 | `next_days`         | number                                              | 2           | How many times the card will look into the future to find the next event. |
-| `day_style`            | `default` or `counter` | `default`   | Option for how the date of an event should be displayed. `default` shows the date in date format and `counter` shows the number of days remaining before the event.       |
+| `include_last_past` | boolean | `false` | Also show the most recent past collection per pattern. |
+| `past_days` | number | `60` | How far back to search for the most recent collection. |
+| `sort_by` | `date`, `pattern`, or `pattern_grid` | `date` | Chronological order, fixed pattern columns, or a normal grid sorted by pattern. |
+| `mobile_compact` | boolean | `false` | Use a compact one-column presentation with shorter dates on narrow screens. |
+| `day_style`            | `default`, `counter`, `weekday`, `custom`, `date_and_counter`, or `weekday_and_counter` | `default`   | Defines the displayed event time. The combined styles show a date and countdown. |
 | `card_style`            | `card`, `chip` or `icon` | `card`   | Switch between the events style `Standard card`, `Chip card` or a new `Icon` predefined layout. |
 | `alignment_style`            | `left`, `center`, `right` or `space` | `left`   | Switch between alignments on `Chip card` card_style. |
 | `color_mode`            | `background` or `icon` | `background`   | Select whether the color settings should be applied to the background or to the icon. |
