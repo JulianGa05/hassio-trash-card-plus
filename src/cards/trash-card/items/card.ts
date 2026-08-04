@@ -76,8 +76,10 @@ class ItemCard extends BaseItemElement {
     });
     const content = parts.splitCounter ? parts.dateLabel : parts.fullLabel;
 
-    // Separate right-hand counter whenever day_style splits it (and it isn't "today").
-    const showSideCounter = parts.splitCounter && daysTillToday !== 0;
+    // Right-hand counter for split day styles (including "Heute" / "Morgen").
+    const showSideCounter = parts.splitCounter;
+    // Today/tomorrow stay a single centered line — never force the stacked "in/vor" layout.
+    const useStackedCounter = stackedCounter && Boolean(parts.counterPrefix) && daysTillToday !== 0 && daysTillToday !== 1;
 
     const cssClasses = {
       today: daysTillToday === 0,
@@ -85,7 +87,7 @@ class ItemCard extends BaseItemElement {
       another: daysTillToday > 1,
       past: Boolean(item.isPast) || daysTillToday < 0,
       'compact-layout': useCompactLayout,
-      'counter-stacked': stackedCounter
+      'counter-stacked': useStackedCounter
     };
 
     const pictureUrl = this.getPictureUrl();
@@ -93,19 +95,14 @@ class ItemCard extends BaseItemElement {
       vertical: layout === 'vertical'
     };
 
-    // Left column: label (+ date). Never shares a row with the counter.
+    // Left column: label + calendar date. "Heute" belongs on the right, not here.
     const leftTitle = with_label ? label : content;
     const leftDate = with_label ?
-      (useCompactLayout && daysTillToday !== 0 ? dateOnly : content) :
+      (useCompactLayout ? dateOnly : content) :
       undefined;
 
-    // Today without side counter: show "Heute" as the date line when labeled.
-    const leftDateResolved = !showSideCounter && with_label && daysTillToday === 0 ?
-      parts.counterText :
-      leftDate;
-
     const counterNode = showSideCounter ?
-      (stackedCounter && parts.counterPrefix ?
+      (useStackedCounter ?
         html`
           <div class="counter-block stacked" aria-label=${parts.counterText}>
             <span class="counter-prefix">${parts.counterPrefix}</span>
@@ -125,7 +122,7 @@ class ItemCard extends BaseItemElement {
             ${pictureUrl ? this.renderPicture(pictureUrl) : this.renderIcon()}
             <div class="info-block" id="info">
               <div class="info-label">${leftTitle}</div>
-              ${leftDateResolved ? html`<div class="info-date">${leftDateResolved}</div>` : nothing}
+              ${leftDate ? html`<div class="info-date">${leftDate}</div>` : nothing}
             </div>
             ${counterNode}
           </div>

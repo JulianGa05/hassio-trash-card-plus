@@ -218,6 +218,8 @@ const getDateParts = (
   const isTodayOrTomorrow = stateDay === todayDay || stateDay === tomorrowDay;
 
   if (isTodayOrTomorrow && days >= 0) {
+    const day = getFormattedDate(item, dayStyle, dayStyleFormat, hass.language, compact);
+    const datePart = getTimeString(customLocalize, 'day', day, startTime, endTime, excludeTime, false);
     const base = getTimeString(
       customLocalize,
       stateDay === todayDay ? 'today' : 'tomorrow',
@@ -228,12 +230,11 @@ const getDateParts = (
       false
     );
 
-    // Today: keep a single "Heute" label (no duplicate badge).
-    // Tomorrow+: date/label left, counter badge right.
-    if (isCombined && stateDay === tomorrowDay) {
+    // Combined: calendar date left, "Heute"/"Morgen" (or day-count) as the right counter.
+    if (isCombined) {
       return {
-        dateLabel: base,
-        fullLabel: combineDateAndCounter(base, getCounterString(item, customLocalize, undefined, undefined, true)),
+        dateLabel: datePart,
+        fullLabel: combineDateAndCounter(datePart, base),
         days,
         splitCounter: true,
         ...counterFields
