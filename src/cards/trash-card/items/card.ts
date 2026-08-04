@@ -343,6 +343,8 @@ class ItemCard extends BaseItemElement {
         /*
          * Icon + label share one font-size so the icon scales with label_font_size.
          * Fit-content width + margin auto = true centered group (no tile-icon chrome).
+         * line-height: 1 keeps the text box = glyph height so flex center matches caps;
+         * a tiny translateY lifts MDI glyphs that sit optically low in their viewBox.
          */
         .vertical-header {
           display: flex;
@@ -355,7 +357,7 @@ class ItemCard extends BaseItemElement {
           max-width: 100%;
           margin: 0 auto;
           font-size: calc(0.95rem * var(--trash-label-size));
-          line-height: 1.15;
+          line-height: 1;
           min-width: 0;
         }
 
@@ -364,7 +366,7 @@ class ItemCard extends BaseItemElement {
           min-width: 0;
           font-size: 1em;
           font-weight: 650;
-          line-height: 1.15;
+          line-height: 1;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -372,12 +374,15 @@ class ItemCard extends BaseItemElement {
 
         .vertical-header .vertical-icon {
           flex: 0 0 auto;
-          --mdc-icon-size: 1.1em;
-          width: 1.1em;
-          height: 1.1em;
+          --mdc-icon-size: 1em;
+          width: 1em;
+          height: 1em;
           display: block;
+          line-height: 0;
           object-fit: contain;
           color: var(--tile-color, currentColor);
+          /* Optical: MDI viewBoxes sit slightly below the text midline */
+          transform: translateY(-0.06em);
         }
 
         .vertical-divider {
