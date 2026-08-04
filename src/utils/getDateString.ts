@@ -18,8 +18,12 @@ interface DateParts {
   days: number;
   /** Whether day_style wants a separate counter badge. */
   splitCounter: boolean;
-  /** Inline counter text, e.g. "vor 13" / "in 7 Tagen". */
+  /** Inline counter text, e.g. "vor 13 Tagen" / "in 7 Tagen". */
   counterText: string;
+  /** Prefix for stacked counter ("in" / "vor"), empty for today/tomorrow. */
+  counterPrefix: string;
+  /** Rest line for stacked counter ("12 Tagen"), or full label when no prefix. */
+  counterRest: string;
 }
 
 const format = (date: Date, dateStyleFormat: string, language: string) =>
@@ -115,6 +119,43 @@ const getBadgeText = (days: number, customLocalize: CustomLocalize): string => {
   return customLocalize('card.trash.badge_in').replace('<DAYS>', `${days}`);
 };
 
+const getStackedCounterParts = (
+  days: number,
+  customLocalize: CustomLocalize
+): { prefix: string; rest: string; full: string } => {
+  if (days === 0 || days === 1) {
+    const label = getBadgeText(days, customLocalize);
+
+    return { prefix: '', rest: label, full: label };
+  }
+
+  if (days < 0) {
+    const amount = Math.abs(days);
+    const prefix = customLocalize('card.trash.counter_prefix_ago');
+    const full = getBadgeText(days, customLocalize);
+
+    // Languages without a leading "ago"/"vor" keep a single-line past label.
+    if (!prefix) {
+      return { prefix: '', rest: full, full };
+    }
+
+    const rest = customLocalize(`card.trash.counter_amount${amount === 1 ? '' : '_more'}`).
+      replace('<DAYS>', `${amount}`);
+
+    return { prefix, rest, full };
+  }
+
+  const prefix = customLocalize('card.trash.counter_prefix_in');
+  const rest = customLocalize(`card.trash.counter_amount${days === 1 ? '' : '_more'}`).
+    replace('<DAYS>', `${days}`);
+
+  return {
+    prefix,
+    rest,
+    full: getBadgeText(days, customLocalize)
+  };
+};
+
 const getDateParts = (
   item: CalendarItem,
   excludeTime?: boolean,
@@ -128,7 +169,9 @@ const getDateParts = (
     fullLabel: '',
     days: 0,
     splitCounter: false,
-    counterText: ''
+    counterText: '',
+    counterPrefix: '',
+    counterRest: ''
   };
 
   if (!hass) {
@@ -137,10 +180,16 @@ const getDateParts = (
 
   const customLocalize = setupCustomlocalize(hass);
   const days = daysTill(new Date(), item.date.start);
+  const stacked = getStackedCounterParts(days, customLocalize);
   // Prefer full phrases ("in 15 Tagen") for readability; keep short labels for today/tomorrow.
   const counterText = days === 0 || days === 1 ?
-    getBadgeText(days, customLocalize) :
+    stacked.full :
     getCounterString(item, customLocalize, undefined, undefined, true);
+  const counterFields = {
+    counterText,
+    counterPrefix: stacked.prefix,
+    counterRest: stacked.rest || counterText
+  };
 
   const today = new Date();
   const tomorrow = new Date();
@@ -180,14 +229,14 @@ const getDateParts = (
     );
 
     // Today: keep a single "Heute" label (no duplicate badge).
-    // Tomorrow+: date/label left, large counter badge right.
+    // Tomorrow+: date/label left, counter badge right.
     if (isCombined && stateDay === tomorrowDay) {
       return {
         dateLabel: base,
         fullLabel: combineDateAndCounter(base, getCounterString(item, customLocalize, undefined, undefined, true)),
         days,
         splitCounter: true,
-        counterText
+        ...counterFields
       };
     }
 
@@ -196,7 +245,7 @@ const getDateParts = (
       fullLabel: base,
       days,
       splitCounter: false,
-      counterText
+      ...counterFields
     };
   }
 
@@ -208,7 +257,7 @@ const getDateParts = (
       fullLabel: counter,
       days,
       splitCounter: false,
-      counterText
+      ...counterFields
     };
   }
 
@@ -223,7 +272,7 @@ const getDateParts = (
       fullLabel: combineDateAndCounter(datePart, counter),
       days,
       splitCounter: true,
-      counterText
+      ...counterFields
     };
   }
 
@@ -232,7 +281,7 @@ const getDateParts = (
     fullLabel: datePart,
     days,
     splitCounter: false,
-    counterText
+    ...counterFields
   };
 };
 

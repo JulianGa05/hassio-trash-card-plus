@@ -53,6 +53,22 @@
                     "compact": "Kompakt (zwei Zeilen)"
                 }
             },
+            "counter_stacked": {
+                "title": "„in / vor“ in eigener Zeile",
+                "helper": "Zeigt „in“ bzw. „vor“ über der Tageszahl (schmaler Counter-Block)."
+            },
+            "label_font_size": {
+                "title": "Schriftgröße Bezeichnung (%)",
+                "helper": "100 = Standard. Gilt für den Namen der Müllart."
+            },
+            "date_font_size": {
+                "title": "Schriftgröße Datum (%)",
+                "helper": "100 = Standard. Gilt für die Datumszeile."
+            },
+            "counter_font_size": {
+                "title": "Schriftgröße „in / vor X Tagen“ (%)",
+                "helper": "100 = Standard. Gilt für den Tage-Counter."
+            },
             "layout_picker": {
                 "values": {
                     "default": "Standard Layout",
@@ -164,6 +180,10 @@
             "badge_ago_one": "vor 1 Tag",
             "badge_in": "in <DAYS> Tagen",
             "badge_in_one": "in 1 Tag",
+            "counter_prefix_in": "in",
+            "counter_prefix_ago": "vor",
+            "counter_amount": "<DAYS> Tag",
+            "counter_amount_more": "<DAYS> Tagen",
             "section_past": "Zuletzt geleert",
             "section_upcoming": "Demnächst"
         }

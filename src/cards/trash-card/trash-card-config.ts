@@ -85,6 +85,14 @@ interface TrashCardConfig {
   mobile_compact?: boolean;
   /** Card information arrangement on non-mobile screens. */
   info_layout?: typeof INFOLAYOUTS[number];
+  /** Stack counter as "in"/"vor" above the day count (narrower). */
+  counter_stacked?: boolean;
+  /** Font size for the trash label, percent of default (100). */
+  label_font_size?: number;
+  /** Font size for the date line, percent of default (100). */
+  date_font_size?: number;
+  /** Font size for the days-until counter, percent of default (100). */
+  counter_font_size?: number;
   day_style?: typeof DAYSTYLES[number];
   day_style_format?: string;
   card_style?: typeof CARDSTYLES[number];
@@ -134,6 +142,10 @@ const entityCardConfigStruct = assign(
       literal(INFOLAYOUTS[0]),
       literal(INFOLAYOUTS[1])
     ])),
+    counter_stacked: optional(boolean()),
+    label_font_size: optional(integer()),
+    date_font_size: optional(integer()),
+    counter_font_size: optional(integer()),
     day_style: optional(union([
       literal(DAYSTYLES[0]),
       literal(DAYSTYLES[1]),

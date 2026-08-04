@@ -211,6 +211,65 @@ const getSchema = (customLocalize: LocalizeFunc, currentValues: TrashCardConfig,
             }
           }] as HaFormSchema[] :
           [],
+        ...currentValues.card_style === 'card' &&
+        (currentValues.day_style === 'date_and_counter' || currentValues.day_style === 'weekday_and_counter') ?
+          [{
+            name: 'counter_stacked',
+            label: customLocalize(`editor.form.counter_stacked.title`),
+            helper: customLocalize(`editor.form.counter_stacked.helper`),
+            selector: { boolean: {}}
+          }] as HaFormSchema[] :
+          [],
+        ...currentValues.card_style === 'card' ?
+          [{
+            type: 'grid',
+            name: '',
+            schema: [
+              {
+                name: 'label_font_size',
+                label: customLocalize(`editor.form.label_font_size.title`),
+                helper: customLocalize(`editor.form.label_font_size.helper`),
+                selector: {
+                  number: {
+                    min: 50,
+                    max: 200,
+                    step: 5,
+                    mode: 'box',
+                    unit_of_measurement: '%'
+                  }
+                }
+              },
+              {
+                name: 'date_font_size',
+                label: customLocalize(`editor.form.date_font_size.title`),
+                helper: customLocalize(`editor.form.date_font_size.helper`),
+                selector: {
+                  number: {
+                    min: 50,
+                    max: 200,
+                    step: 5,
+                    mode: 'box',
+                    unit_of_measurement: '%'
+                  }
+                }
+              },
+              {
+                name: 'counter_font_size',
+                label: customLocalize(`editor.form.counter_font_size.title`),
+                helper: customLocalize(`editor.form.counter_font_size.helper`),
+                selector: {
+                  number: {
+                    min: 50,
+                    max: 200,
+                    step: 5,
+                    mode: 'box',
+                    unit_of_measurement: '%'
+                  }
+                }
+              }
+            ]
+          }] as HaFormSchema[] :
+          [],
         ...(currentValues.card_style === 'card' || currentValues.card_style === 'chip') && currentValues.day_style === 'custom' ?
           [{
             name: 'day_style_format',

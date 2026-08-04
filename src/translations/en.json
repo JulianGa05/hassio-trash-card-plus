@@ -53,6 +53,22 @@
                     "compact": "Compact (two lines)"
                 }
             },
+            "counter_stacked": {
+                "title": "Put “in / ago” on its own line",
+                "helper": "Shows “in” / “ago” above the day count for a narrower counter block."
+            },
+            "label_font_size": {
+                "title": "Label font size (%)",
+                "helper": "100 = default. Applies to the trash type name."
+            },
+            "date_font_size": {
+                "title": "Date font size (%)",
+                "helper": "100 = default. Applies to the date line."
+            },
+            "counter_font_size": {
+                "title": "Days-until font size (%)",
+                "helper": "100 = default. Applies to the days counter."
+            },
             "layout_picker": {
                 "values": {
                     "default": "Default layout",
@@ -172,6 +188,10 @@
             "badge_ago_one": "1 ago",
             "badge_in": "in <DAYS> days",
             "badge_in_one": "in 1 day",
+            "counter_prefix_in": "in",
+            "counter_prefix_ago": "",
+            "counter_amount": "<DAYS> day",
+            "counter_amount_more": "<DAYS> days",
             "section_past": "Last collected",
             "section_upcoming": "Upcoming"
         }
