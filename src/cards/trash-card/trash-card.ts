@@ -42,6 +42,7 @@ const configDefaults = {
     action: 'more-info'
   },
   with_label: true,
+  mobile_compact: true,
   debug: false
 };
 

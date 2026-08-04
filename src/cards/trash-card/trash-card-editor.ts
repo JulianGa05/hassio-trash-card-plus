@@ -42,7 +42,7 @@ const configDefaults = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   sort_by: 'date',
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  mobile_compact: false,
+  mobile_compact: true,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   drop_todayevents_from: '10:00:00',
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -328,7 +328,7 @@ class TrashCardEditor extends LitElement {
       delete config.sort_by;
     }
 
-    if (!config.mobile_compact) {
+    if (config.mobile_compact) {
       delete config.mobile_compact;
     }
 
