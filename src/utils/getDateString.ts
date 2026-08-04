@@ -87,7 +87,6 @@ const getFormattedDate = (
   }
 
   return item.date.start.toLocaleDateString(language, {
-    year: 'numeric',
     month: compact ? 'short' : 'long',
     day: 'numeric'
   });

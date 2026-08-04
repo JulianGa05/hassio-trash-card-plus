@@ -99,7 +99,7 @@
                 "events_per_pattern_description": "How many upcoming events to show per trash pattern. 1 = next only, 2+ = several, 0 = all events in range.",
                 "items_per_row_pattern_description": "Number of pattern columns in the grid. Each column stacks events for one trash type.",
                 "mobile_compact": "Compact mobile view",
-                "mobile_compact_description": "Use a space-saving, one-column presentation with shorter dates on narrow screens.",
+                "mobile_compact_description": "Use less padding, compact icons, and shorter dates on narrow screens. The grid uses at most two columns.",
                 "icon_size": "Icon size",
                 "with_label": "Show label"
             },

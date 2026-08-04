@@ -60,7 +60,9 @@ class Cards extends LitElement implements BaseContainerElement {
   private gridStyle (columns: number) {
     return styleMap({
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      'grid-template-columns': `repeat(${columns}, minmax(0, 1fr))`
+      'grid-template-columns': `repeat(${columns}, minmax(0, 1fr))`,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      '--mobile-columns': `${Math.min(columns, 2)}`
     });
   }
 
@@ -219,7 +221,7 @@ class Cards extends LitElement implements BaseContainerElement {
         }
         @media (max-width: 600px) {
           .card-container {
-            grid-template-columns: minmax(0, 1fr) !important;
+            grid-template-columns: repeat(var(--mobile-columns), minmax(0, 1fr)) !important;
           }
           .pattern-column {
             display: contents;

@@ -36,7 +36,11 @@ class ItemCard extends BaseItemElement {
       this.hass,
       compactMobile
     );
-    const content = parts.splitCounter ? parts.dateLabel : parts.fullLabel;
+    // Combined styles remain two lines: label above, countdown (optionally
+    // followed by the date) below. This keeps narrow card grids readable.
+    const content = parts.splitCounter ?
+      `${parts.counterText} · ${parts.dateLabel}` :
+      parts.fullLabel;
 
     const daysTillToday = daysTill(new Date(), date.start);
 
@@ -45,15 +49,13 @@ class ItemCard extends BaseItemElement {
       tomorrow: daysTillToday === 1,
       another: daysTillToday > 1,
       past: Boolean(item.isPast) || daysTillToday < 0,
-      'with-counter': parts.splitCounter,
       'compact-mobile': compactMobile
     };
 
     const pictureUrl = this.getPictureUrl();
 
     const contentClasses = {
-      vertical: layout === 'vertical',
-      'with-counter': parts.splitCounter
+      vertical: layout === 'vertical'
     };
 
     return html`
@@ -68,9 +70,6 @@ class ItemCard extends BaseItemElement {
               .secondary=${with_label ? content : undefined}
               .multiline=${true}
             ></ha-tile-info>
-            ${parts.splitCounter ? html`
-              <div class="counter-badge" aria-hidden="true">${parts.counterText}</div>
-            ` : nothing}
           </div>
         </div>
       </ha-card>
@@ -140,46 +139,24 @@ class ItemCard extends BaseItemElement {
           pointer-events: none;
           gap: 10px;
         }
-        .content.with-counter ha-tile-info {
-          flex: 1 1 auto;
-          min-width: 0;
-        }
-        .counter-badge {
-          flex: 0 0 auto;
-          margin-left: 4px;
-          padding: 2px 0;
-          font-size: 1.05em;
-          font-weight: 650;
-          line-height: 1.2;
-          white-space: nowrap;
-          opacity: 0.95;
-        }
         @media (max-width: 600px) {
           ha-card.compact-mobile .content {
             gap: 8px;
-            min-height: 42px;
-            padding: 7px 9px;
+            min-height: 56px;
+            padding: 8px;
           }
           ha-card.compact-mobile ha-tile-icon {
-            transform: scale(0.85);
+            transform: scale(0.9);
             transform-origin: center;
           }
           ha-card.compact-mobile ha-tile-info {
-            font-size: 0.9em;
-          }
-          ha-card.compact-mobile .counter-badge {
-            font-size: 0.93em;
-            margin-left: 0;
+            font-size: 0.94em;
           }
         }
         .vertical {
           flex-direction: column;
           text-align: center;
           justify-content: center;
-        }
-
-        .vertical .counter-badge {
-          margin-left: 0;
         }
 
         .vertical ha-tile-info {
@@ -195,15 +172,15 @@ class ItemCard extends BaseItemElement {
           -webkit-user-select: none;
           -moz-user-select: none;
           position: relative;
-          padding: 6px;
-          margin: -6px;
+          padding: 2px;
+          margin: -2px;
           flex: 0 0 auto;
         }
 
         hui-image {
           width: 24px;
           height: 24px;
-          margin: -12px 0px;
+          margin: -4px 0px;
         }
 
         hui-image img {
@@ -220,6 +197,7 @@ class ItemCard extends BaseItemElement {
 
         ha-tile-info {
           position: relative;
+          flex: 1 1 auto;
           min-width: 0;
           transition: background-color 180ms ease-in-out;
           box-sizing: border-box;

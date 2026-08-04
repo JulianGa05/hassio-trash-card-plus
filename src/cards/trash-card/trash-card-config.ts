@@ -76,7 +76,7 @@ interface TrashCardConfig {
   include_last_past?: boolean;
   /** Sort/layout: chronological, grouped columns, or pattern-ordered grid. */
   sort_by?: typeof SORTMODES[number];
-  /** Use a denser, single-column presentation on narrow screens. */
+  /** Use a denser presentation on narrow screens. */
   mobile_compact?: boolean;
   day_style?: typeof DAYSTYLES[number];
   day_style_format?: string;

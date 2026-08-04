@@ -99,7 +99,7 @@
                 "events_per_pattern_description": "Wie viele nächste Termine je Müll-Vorlage angezeigt werden. 1 = nur der nächste, 2+ = mehrere, 0 = alle Termine im Zeitraum.",
                 "items_per_row_pattern_description": "Anzahl der Vorlage-Spalten im Raster. Jede Spalte enthält die Termine einer Müllart untereinander.",
                 "mobile_compact": "Kompakte Mobilansicht",
-                "mobile_compact_description": "Auf schmalen Bildschirmen eine platzsparende, einspaltige Ansicht mit kürzerem Datum verwenden.",
+                "mobile_compact_description": "Auf schmalen Bildschirmen weniger Innenabstand, kompaktere Symbole und kürzere Daten verwenden. Das Raster nutzt höchstens zwei Spalten.",
                 "icon_size": "Icongröße",
                 "with_label": "Bezeichnung anzeigen"
             },
