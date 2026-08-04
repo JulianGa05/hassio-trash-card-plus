@@ -328,18 +328,37 @@ class ItemCard extends BaseItemElement {
         }
 
         .vertical-header {
-          display: flex;
+          display: inline-flex;
           flex-direction: row;
           align-items: center;
           justify-content: center;
-          gap: 6px;
-          width: 100%;
+          gap: 2px;
+          width: auto;
+          max-width: 100%;
           min-width: 0;
         }
 
         .vertical-header .info-label {
-          flex: 0 1 auto;
+          flex: 0 0 auto;
           min-width: 0;
+        }
+
+        /* Shrink the tile-icon footprint so glyph + label center as one unit */
+        .vertical ha-tile-icon {
+          --mdc-icon-size: 18px;
+          padding: 0;
+          margin: 0;
+          width: 20px;
+          height: 20px;
+          flex: 0 0 auto;
+          align-self: center;
+        }
+
+        .vertical hui-image {
+          width: 18px;
+          height: 18px;
+          margin: 0;
+          padding: 0;
         }
 
         .vertical-divider {
