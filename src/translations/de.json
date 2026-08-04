@@ -73,6 +73,7 @@
                 "values": {
                     "default": "Standard Layout",
                     "vertical": "Vertikales Layout",
+                    "vertical_date_bottom": "Vertikal (Datum unten)",
                     "horizontal": "Horizontales Layout"
                 }
             },

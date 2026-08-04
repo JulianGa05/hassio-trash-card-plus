@@ -6,12 +6,15 @@ import type { ItemSettings } from '../../utils/itemSettings';
 const LAYOUTS = [
   'default',
   'horizontal',
-  'vertical'
+  'vertical',
+  'vertical_date_bottom'
 ] as const;
 
 const LAYOUT_ICONS: Record<typeof LAYOUTS[number], string> = {
   default: 'mdi:card-text-outline',
   vertical: 'mdi:focus-field-vertical',
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  vertical_date_bottom: 'mdi:order-numeric-descending',
   horizontal: 'mdi:focus-field-horizontal'
 };
 
@@ -129,7 +132,12 @@ const entityCardConfigStruct = assign(
     entities: optional(array(string())),
     name: optional(string()),
     location: optional(string()),
-    layout: optional(union([ literal(LAYOUTS[0]), literal(LAYOUTS[1]), literal(LAYOUTS[2]) ])),
+    layout: optional(union([
+      literal(LAYOUTS[0]),
+      literal(LAYOUTS[1]),
+      literal(LAYOUTS[2]),
+      literal(LAYOUTS[3])
+    ])),
     fill_container: optional(boolean()),
     filter_events: optional(boolean()),
     full_size: optional(boolean()),

@@ -109,12 +109,13 @@ This fork extends the upstream card with:
 - Chronological, pattern-column, and pattern-sorted grid layouts (`sort_by`)
 - Optional side-by-side past | next columns (`section_layout: columns`)
 - Tighter vertical card cells (icon + label on one row, date/countdown below)
+- Optional vertical layout with date at the bottom (`layout: vertical_date_bottom`)
 - An optional compact single-column view on narrow screens (`mobile_compact`)
 
 | Name                | Type                                                | Default     | Description                                                                         |
 | :------------------ | :-------------------------------------------------- | :---------- | :---------------------------------------------------------------------------------- |
 | `entities`            | array of strings                                              | Required    | The calendar(s) containing the collection events.                        |
-| `layout`            | string                                              | Optional    | Layout of the card. Vertical, horizontal and default layouts are supported.           |
+| `layout`            | string                                              | Optional    | Layout of the card. Vertical, vertical with date at bottom, horizontal and default layouts are supported.           |
 | `fill_container`    | boolean                                             | `false`     | Fill container or not. Useful when card is in a grid, vertical or horizontal layout. |
 | `filter_events`     | boolean                                             | `false`     | Filter and display events from the calendar by names (if at least one is defined). |
 | `full_size`         | boolean                                             | `false`     | Show the card without the default card margins. |

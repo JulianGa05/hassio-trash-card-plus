@@ -91,7 +91,8 @@ class ItemCard extends BaseItemElement {
     };
 
     const pictureUrl = this.getPictureUrl();
-    const isVertical = layout === 'vertical';
+    const isVertical = layout === 'vertical' || layout === 'vertical_date_bottom';
+    const dateAtBottom = layout === 'vertical_date_bottom';
     const contentClasses = {
       vertical: isVertical
     };
@@ -115,11 +116,20 @@ class ItemCard extends BaseItemElement {
         `) :
       nothing;
 
+    const dateNode = leftDate ?
+      html`<div class="info-date">${leftDate}</div>` :
+      nothing;
+
     // Vertical: compact ha-icon (not ha-tile-icon) so icon+label center as one unit.
     if (isVertical) {
       const verticalIcon = pictureUrl ?
         html`<img class="vertical-icon" src=${pictureUrl} alt="" aria-hidden="true" />` :
         html`<ha-icon class="vertical-icon" .icon=${item.icon}></ha-icon>`;
+
+      // Default: date then counter. vertical_date_bottom swaps them.
+      const metaNodes = dateAtBottom ?
+        html`${counterNode}${dateNode}` :
+        html`${dateNode}${counterNode}`;
 
       return html`
         <ha-card style=${styleMap(style)} class=${classMap(cssClasses)}>
@@ -132,8 +142,7 @@ class ItemCard extends BaseItemElement {
               </div>
               <div class="vertical-divider" role="presentation"></div>
               <div class="vertical-meta">
-                ${leftDate ? html`<div class="info-date">${leftDate}</div>` : nothing}
-                ${counterNode}
+                ${metaNodes}
               </div>
             </div>
           </div>
