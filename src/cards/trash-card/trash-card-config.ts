@@ -53,6 +53,12 @@ const INFOLAYOUTS = [
   'compact'
 ] as const;
 
+/** How past vs. upcoming sections are arranged in the card container. */
+const SECTIONLAYOUTS = [
+  'stacked',
+  'columns'
+] as const;
+
 interface TrashCardConfig {
   entities?: string[];
   pattern?: ItemSettings[];
@@ -85,6 +91,11 @@ interface TrashCardConfig {
   mobile_compact?: boolean;
   /** Card information arrangement on non-mobile screens. */
   info_layout?: typeof INFOLAYOUTS[number];
+  /**
+   * How past and upcoming sections are arranged.
+   * `stacked` = horizontal dividers (default); `columns` = side-by-side past | next.
+   */
+  section_layout?: typeof SECTIONLAYOUTS[number];
   /** Stack counter as "in"/"vor" above the day count (narrower). */
   counter_stacked?: boolean;
   /** Font size for the trash label, percent of default (100). */
@@ -142,6 +153,10 @@ const entityCardConfigStruct = assign(
       literal(INFOLAYOUTS[0]),
       literal(INFOLAYOUTS[1])
     ])),
+    section_layout: optional(union([
+      literal(SECTIONLAYOUTS[0]),
+      literal(SECTIONLAYOUTS[1])
+    ])),
     counter_stacked: optional(boolean()),
     label_font_size: optional(integer()),
     date_font_size: optional(integer()),
@@ -185,7 +200,8 @@ export {
   LAYOUTS,
   LAYOUT_ICONS,
   SORTMODES,
-  INFOLAYOUTS
+  INFOLAYOUTS,
+  SECTIONLAYOUTS
 };
 
 export type {

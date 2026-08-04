@@ -1,5 +1,6 @@
 import { LitElement, css, html, nothing } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
+import { classMap } from 'lit/directives/class-map.js';
 import { customElement, property, state } from 'lit/decorators.js';
 import { TRASH_CARD_NAME } from '../const';
 import { groupItemsByPattern } from '../../../utils/sortItems';
@@ -12,6 +13,7 @@ import type { BaseContainerElement } from './BaseContainerElement';
 import type { TrashCardConfig } from '../trash-card-config';
 import type { CalendarItem } from '../../../utils/calendarItem';
 import type { HomeAssistant } from '../../../utils/ha';
+import type { TemplateResult } from 'lit';
 
 const isPastItem = (item: CalendarItem): boolean =>
   Boolean(item.isPast) || daysTill(new Date(), item.date.start) < 0;
@@ -57,6 +59,12 @@ class Cards extends LitElement implements BaseContainerElement {
     `;
   }
 
+  private renderSectionHeading (label: string) {
+    return html`
+      <div class="section-heading">${label}</div>
+    `;
+  }
+
   private isCompactLayoutActive (): boolean {
     if (!this.config) {
       return false;
@@ -67,6 +75,10 @@ class Cards extends LitElement implements BaseContainerElement {
     }
 
     return Boolean(this.config.mobile_compact) && window.matchMedia('(max-width: 600px)').matches;
+  }
+
+  private isColumnsSectionLayout (): boolean {
+    return (this.config?.section_layout ?? 'stacked') === 'columns';
   }
 
   /** Compact needs readable text — never more than two columns. */
@@ -125,6 +137,38 @@ class Cards extends LitElement implements BaseContainerElement {
     `;
   }
 
+  /** Side-by-side past | future columns — each side stacks cards in one column. */
+  private renderColumnsSections (
+    pastContent: TemplateResult | typeof nothing,
+    futureContent: TemplateResult | typeof nothing,
+    pastLabel: string,
+    futureLabel: string,
+    hasPast: boolean,
+    hasFuture: boolean
+  ) {
+    return html`
+      <div class=${classMap({
+    sections: true,
+    columns: true,
+    'past-only': hasPast && !hasFuture,
+    'future-only': hasFuture && !hasPast
+  })}>
+        ${hasPast ? html`
+          <div class="section-column past">
+            ${this.renderSectionHeading(pastLabel)}
+            ${pastContent}
+          </div>
+        ` : nothing}
+        ${hasFuture ? html`
+          <div class="section-column future">
+            ${this.renderSectionHeading(futureLabel)}
+            ${futureContent}
+          </div>
+        ` : nothing}
+      </div>
+    `;
+  }
+
   public render () {
     if (!this.config || !this.hass) {
       return nothing;
@@ -140,6 +184,9 @@ class Cards extends LitElement implements BaseContainerElement {
     const pastItems = this.items.filter(isPastItem);
     const futureItems = this.items.filter(item => !isPastItem(item));
     const hasBoth = pastItems.length > 0 && futureItems.length > 0;
+    const columnsLayout = this.isColumnsSectionLayout();
+    const pastLabel = customLocalize('card.trash.section_past');
+    const upcomingLabel = customLocalize('card.trash.section_upcoming');
 
     if (sortByPattern) {
       const allGroups = groupItemsByPattern(this.items, this.config.pattern);
@@ -159,16 +206,36 @@ class Cards extends LitElement implements BaseContainerElement {
         items: group.items.filter(item => !isPastItem(item))
       }));
 
-      const hasPast = pastGroups.some(g => g.items.length > 0);
-      const hasFuture = futureGroups.some(g => g.items.length > 0);
+      const hasPast = pastGroups.some(group => group.items.length > 0);
+      const hasFuture = futureGroups.some(group => group.items.length > 0);
+
+      // Side-by-side layout: each half stacks pattern cards in a single column.
+      if (columnsLayout) {
+        const sideColumns = 1;
+        const pastContent = hasPast ?
+          this.renderPatternGrid(pastGroups, sideColumns, 'past') :
+          nothing;
+        const futureContent = hasFuture ?
+          this.renderPatternGrid(futureGroups, sideColumns, 'future') :
+          nothing;
+
+        return this.renderColumnsSections(
+          pastContent,
+          futureContent,
+          pastLabel,
+          upcomingLabel,
+          hasPast,
+          hasFuture
+        );
+      }
 
       return html`
         <div class="sections">
           ${hasPast ? html`
-            ${hasBoth ? this.renderDivider(customLocalize('card.trash.section_past')) : nothing}
+            ${hasBoth ? this.renderDivider(pastLabel) : nothing}
             ${this.renderPatternGrid(pastGroups, columns, 'past')}
           ` : nothing}
-          ${hasPast && hasFuture ? this.renderDivider(customLocalize('card.trash.section_upcoming')) : nothing}
+          ${hasPast && hasFuture ? this.renderDivider(upcomingLabel) : nothing}
           ${hasFuture ? this.renderPatternGrid(futureGroups, columns, 'future') : nothing}
         </div>
       `;
@@ -182,13 +249,31 @@ class Cards extends LitElement implements BaseContainerElement {
       groupItemsByPattern(futureItems, this.config.pattern).flatMap(group => group.items) :
       futureItems;
 
+    if (columnsLayout) {
+      const pastContent = pastItems.length > 0 ?
+        this.renderItemGrid(gridPastItems, 1) :
+        nothing;
+      const futureContent = futureItems.length > 0 ?
+        this.renderItemGrid(gridFutureItems, 1) :
+        nothing;
+
+      return this.renderColumnsSections(
+        pastContent,
+        futureContent,
+        pastLabel,
+        upcomingLabel,
+        pastItems.length > 0,
+        futureItems.length > 0
+      );
+    }
+
     return html`
       <div class="sections">
         ${pastItems.length > 0 ? html`
-          ${hasBoth ? this.renderDivider(customLocalize('card.trash.section_past')) : nothing}
+          ${hasBoth ? this.renderDivider(pastLabel) : nothing}
           ${this.renderItemGrid(gridPastItems, itemsPerRow)}
         ` : nothing}
-        ${hasBoth ? this.renderDivider(customLocalize('card.trash.section_upcoming')) : nothing}
+        ${hasBoth ? this.renderDivider(upcomingLabel) : nothing}
         ${futureItems.length > 0 ? this.renderItemGrid(gridFutureItems, itemsPerRow) : nothing}
       </div>
     `;
@@ -201,6 +286,33 @@ class Cards extends LitElement implements BaseContainerElement {
           display: flex;
           flex-direction: column;
           gap: 8px;
+        }
+        .sections.columns {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+          align-items: start;
+        }
+        .sections.columns.past-only,
+        .sections.columns.future-only {
+          grid-template-columns: 1fr;
+        }
+        .section-column {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          min-width: 0;
+        }
+        .section-heading {
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          opacity: 0.7;
+          text-align: center;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .card-container {
           display: grid;
@@ -249,6 +361,11 @@ class Cards extends LitElement implements BaseContainerElement {
           }
           .pattern-column {
             display: contents;
+          }
+          /* Keep past | future as two columns even on narrow phones */
+          .sections.columns:not(.past-only):not(.future-only) {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
           }
         }
       `

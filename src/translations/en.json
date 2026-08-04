@@ -85,6 +85,14 @@
                     "pattern_grid": "Pattern-sorted grid"
                 }
             },
+            "section_layout": {
+                "title": "Past / upcoming arrangement",
+                "helper": "Stacked separates last and next collections with a divider. Side by side shows them in two columns (last on the left, next on the right).",
+                "values": {
+                    "stacked": "Stacked (default)",
+                    "columns": "Side by side (two columns)"
+                }
+            },
             "tabs": {
                 "settings": "Settings",
                 "appearance": "Appearance",
@@ -192,8 +200,8 @@
             "counter_prefix_ago": "",
             "counter_amount": "<DAYS> day",
             "counter_amount_more": "<DAYS> days",
-            "section_past": "Last collected",
-            "section_upcoming": "Upcoming"
+            "section_past": "Last collection",
+            "section_upcoming": "Next collection"
         }
     }
 }

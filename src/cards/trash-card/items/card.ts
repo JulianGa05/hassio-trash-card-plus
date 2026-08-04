@@ -91,8 +91,9 @@ class ItemCard extends BaseItemElement {
     };
 
     const pictureUrl = this.getPictureUrl();
+    const isVertical = layout === 'vertical';
     const contentClasses = {
-      vertical: layout === 'vertical'
+      vertical: isVertical
     };
 
     // Left column: label + calendar date. "Heute" belongs on the right, not here.
@@ -114,12 +115,36 @@ class ItemCard extends BaseItemElement {
         `) :
       nothing;
 
+    const iconOrPicture = pictureUrl ? this.renderPicture(pictureUrl) : this.renderIcon();
+
+    // Vertical: icon+label on one row, divider, then date + relative countdown.
+    if (isVertical) {
+      return html`
+        <ha-card style=${styleMap(style)} class=${classMap(cssClasses)}>
+          <div class="background" aria-labelledby="info" ></div>
+          <div class="container">
+            <div class="content ${classMap(contentClasses)}" >
+              <div class="vertical-header" id="info">
+                ${iconOrPicture}
+                <div class="info-label">${leftTitle}</div>
+              </div>
+              <div class="vertical-divider" role="presentation"></div>
+              <div class="vertical-meta">
+                ${leftDate ? html`<div class="info-date">${leftDate}</div>` : nothing}
+                ${counterNode}
+              </div>
+            </div>
+          </div>
+        </ha-card>
+      `;
+    }
+
     return html`
       <ha-card style=${styleMap(style)} class=${classMap(cssClasses)}>
         <div class="background" aria-labelledby="info" ></div>
         <div class="container">
           <div class="content ${classMap(contentClasses)}" >
-            ${pictureUrl ? this.renderPicture(pictureUrl) : this.renderIcon()}
+            ${iconOrPicture}
             <div class="info-block" id="info">
               <div class="info-label">${leftTitle}</div>
               ${leftDate ? html`<div class="info-date">${leftDate}</div>` : nothing}
@@ -297,13 +322,47 @@ class ItemCard extends BaseItemElement {
           flex-direction: column;
           text-align: center;
           justify-content: center;
-          gap: 4px;
+          align-items: center;
+          gap: 0;
+          padding: 8px 10px;
         }
 
-        .vertical .info-block {
-          width: 100%;
-          flex: 0 0 auto;
+        .vertical-header {
+          display: flex;
+          flex-direction: row;
           align-items: center;
+          justify-content: center;
+          gap: 6px;
+          width: 100%;
+          min-width: 0;
+        }
+
+        .vertical-header .info-label {
+          flex: 0 1 auto;
+          min-width: 0;
+        }
+
+        .vertical-divider {
+          width: min(72%, 7.5rem);
+          height: 1px;
+          margin: 7px 0 8px;
+          background: currentColor;
+          opacity: 0.28;
+          flex: 0 0 auto;
+        }
+
+        .vertical-meta {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 2px;
+          width: 100%;
+          min-width: 0;
+        }
+
+        .vertical .info-date {
+          opacity: 0.75;
         }
 
         .vertical .counter-block {

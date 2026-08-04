@@ -85,6 +85,14 @@
                     "pattern_grid": "Nach Vorlage sortiertes Raster"
                 }
             },
+            "section_layout": {
+                "title": "Vergangenheit / Zukunft anordnen",
+                "helper": "Untereinander trennt letzte und nächste Leerungen mit einer Linie. Nebeneinander zeigt sie in zwei Spalten (links letzte, rechts nächste Leerung).",
+                "values": {
+                    "stacked": "Untereinander (Standard)",
+                    "columns": "Nebeneinander (zwei Spalten)"
+                }
+            },
             "tabs": {
                 "settings": "Einstellungen",
                 "appearance": "Darstellung",
@@ -184,8 +192,8 @@
             "counter_prefix_ago": "vor",
             "counter_amount": "<DAYS> Tag",
             "counter_amount_more": "<DAYS> Tagen",
-            "section_past": "Zuletzt geleert",
-            "section_upcoming": "Demnächst"
+            "section_past": "Letzte Leerung",
+            "section_upcoming": "Nächste Leerung"
         }
     }
 }

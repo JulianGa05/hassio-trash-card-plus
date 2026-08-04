@@ -1,4 +1,4 @@
-import { CARDSTYLES, ALIGNMENTSTYLES, COLORMODES, DAYSTYLES, LAYOUTS, LAYOUT_ICONS, SORTMODES, INFOLAYOUTS } from './trash-card-config';
+import { CARDSTYLES, ALIGNMENTSTYLES, COLORMODES, DAYSTYLES, LAYOUTS, LAYOUT_ICONS, SORTMODES, INFOLAYOUTS, SECTIONLAYOUTS } from './trash-card-config';
 
 import type { LocalizeFunc } from '../../utils/ha';
 import type { TrashCardConfig } from './trash-card-config';
@@ -370,6 +370,20 @@ const getSchema = (customLocalize: LocalizeFunc, currentValues: TrashCardConfig,
                 options: [ ...SORTMODES ].map(mode => ({
                   value: mode,
                   label: customLocalize(`editor.form.sort_by.values.${mode}`)
+                })),
+                mode: 'dropdown'
+              }
+            }
+          },
+          {
+            name: 'section_layout',
+            label: customLocalize(`editor.form.section_layout.title`),
+            helper: customLocalize(`editor.form.section_layout.helper`),
+            selector: {
+              select: {
+                options: [ ...SECTIONLAYOUTS ].map(mode => ({
+                  value: mode,
+                  label: customLocalize(`editor.form.section_layout.values.${mode}`)
                 })),
                 mode: 'dropdown'
               }

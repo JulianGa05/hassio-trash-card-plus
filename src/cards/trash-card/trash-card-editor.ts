@@ -46,6 +46,8 @@ const configDefaults = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   info_layout: 'standard',
   // eslint-disable-next-line @typescript-eslint/naming-convention
+  section_layout: 'stacked',
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   counter_stacked: false,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   label_font_size: 100,
@@ -344,6 +346,10 @@ class TrashCardEditor extends LitElement {
 
     if (config.info_layout === 'standard') {
       delete config.info_layout;
+    }
+
+    if (config.section_layout === 'stacked') {
+      delete config.section_layout;
     }
 
     if (!config.counter_stacked) {

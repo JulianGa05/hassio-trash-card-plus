@@ -107,6 +107,8 @@ This fork extends the upstream card with:
 - The most recent past collection per pattern (`include_last_past`)
 - Clear separation of past and upcoming collections
 - Chronological, pattern-column, and pattern-sorted grid layouts (`sort_by`)
+- Optional side-by-side past | next columns (`section_layout: columns`)
+- Tighter vertical card cells (icon + label on one row, date/countdown below)
 - An optional compact single-column view on narrow screens (`mobile_compact`)
 
 | Name                | Type                                                | Default     | Description                                                                         |
@@ -125,6 +127,7 @@ This fork extends the upstream card with:
 | `include_last_past` | boolean | `false` | Also show the most recent past collection per pattern. |
 | `past_days` | number | `60` | How far back to search for the most recent collection. |
 | `sort_by` | `date`, `pattern`, or `pattern_grid` | `date` | Chronological order, fixed pattern columns, or a normal grid sorted by pattern. |
+| `section_layout` | `stacked` or `columns` | `stacked` | `stacked` separates last and next collections with dividers; `columns` puts them side by side (left = last, right = next). |
 | `mobile_compact` | boolean | `true` | Use less padding, compact icons, and shorter dates on narrow screens. The grid uses at most two columns. |
 | `info_layout` | `standard` or `compact` | `standard` | Standard shows a counter on the right; compact shows label and counter above the date. |
 | `counter_stacked` | boolean | `false` | Put “in” / “vor” on its own line above the day count (narrower counter). |
