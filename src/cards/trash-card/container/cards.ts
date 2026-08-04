@@ -165,7 +165,7 @@ class Cards extends LitElement implements BaseContainerElement {
       return html`
         <div class="sections">
           ${hasPast ? html`
-            ${hasBoth ? html`<div class="section-title">${customLocalize('card.trash.section_past')}</div>` : nothing}
+            ${hasBoth ? this.renderDivider(customLocalize('card.trash.section_past')) : nothing}
             ${this.renderPatternGrid(pastGroups, columns, 'past')}
           ` : nothing}
           ${hasPast && hasFuture ? this.renderDivider(customLocalize('card.trash.section_upcoming')) : nothing}
@@ -185,7 +185,7 @@ class Cards extends LitElement implements BaseContainerElement {
     return html`
       <div class="sections">
         ${pastItems.length > 0 ? html`
-          ${hasBoth ? html`<div class="section-title">${customLocalize('card.trash.section_past')}</div>` : nothing}
+          ${hasBoth ? this.renderDivider(customLocalize('card.trash.section_past')) : nothing}
           ${this.renderItemGrid(gridPastItems, itemsPerRow)}
         ` : nothing}
         ${hasBoth ? this.renderDivider(customLocalize('card.trash.section_upcoming')) : nothing}
@@ -201,14 +201,6 @@ class Cards extends LitElement implements BaseContainerElement {
           display: flex;
           flex-direction: column;
           gap: 8px;
-        }
-        .section-title {
-          font-size: 0.75rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-          opacity: 0.65;
-          padding: 0 2px;
         }
         .card-container {
           display: grid;
