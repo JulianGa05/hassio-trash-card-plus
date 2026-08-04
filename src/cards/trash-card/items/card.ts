@@ -75,8 +75,9 @@ class ItemCard extends BaseItemElement {
       day: 'numeric'
     });
     const content = parts.splitCounter ? parts.dateLabel : parts.fullLabel;
-    const showStandardCounter = !useCompactLayout && parts.splitCounter && daysTillToday !== 0;
-    const showCompactCounter = useCompactLayout && with_label && daysTillToday !== 0;
+
+    // Separate right-hand counter whenever day_style splits it (and it isn't "today").
+    const showSideCounter = parts.splitCounter && daysTillToday !== 0;
 
     const cssClasses = {
       today: daysTillToday === 0,
@@ -91,60 +92,42 @@ class ItemCard extends BaseItemElement {
     const contentClasses = {
       vertical: layout === 'vertical'
     };
-    const title = with_label ? label : parts.counterText;
-    const dateLine = useCompactLayout ?
-      (daysTillToday === 0 ? parts.counterText : dateOnly) :
-      (with_label ? content : undefined);
 
-    const renderCounter = (compactClass = false) => {
-      if (stackedCounter && parts.counterPrefix) {
-        return html`
-          <div
-            class=${classMap({
-              'counter-badge': !compactClass,
-              'compact-counter': compactClass,
-              stacked: true
-            })}
-            aria-label=${parts.counterText}
-          >
+    // Left column: label (+ date). Never shares a row with the counter.
+    const leftTitle = with_label ? label : content;
+    const leftDate = with_label ?
+      (useCompactLayout && daysTillToday !== 0 ? dateOnly : content) :
+      undefined;
+
+    // Today without side counter: show "Heute" as the date line when labeled.
+    const leftDateResolved = !showSideCounter && with_label && daysTillToday === 0 ?
+      parts.counterText :
+      leftDate;
+
+    const counterNode = showSideCounter ?
+      (stackedCounter && parts.counterPrefix ?
+        html`
+          <div class="counter-block stacked" aria-label=${parts.counterText}>
             <span class="counter-prefix">${parts.counterPrefix}</span>
             <span class="counter-rest">${parts.counterRest}</span>
           </div>
-        `;
-      }
-
-      return html`
-        <div
-          class=${classMap({
-            'counter-badge': !compactClass,
-            'compact-counter': compactClass
-          })}
-          aria-hidden="true"
-        >${parts.counterText}</div>
-      `;
-    };
+        ` :
+        html`
+          <div class="counter-block" aria-hidden="true">${parts.counterText}</div>
+        `) :
+      nothing;
 
     return html`
       <ha-card style=${styleMap(style)} class=${classMap(cssClasses)}>
         <div class="background" aria-labelledby="info" ></div>
         <div class="container">
           <div class="content ${classMap(contentClasses)}" >
-              ${pictureUrl ? this.renderPicture(pictureUrl) : this.renderIcon()}
-            ${useCompactLayout ? html`
-              <div class="info-text" id="info">
-                <div class="info-row">
-                  <span class="info-label">${title}</span>
-                  ${showCompactCounter ? renderCounter(true) : nothing}
-                </div>
-                <div class="info-date">${dateLine}</div>
-              </div>
-            ` : html`
-              <div class="info-text" id="info">
-                <div class="info-label">${with_label ? label : content}</div>
-                ${with_label && dateLine ? html`<div class="info-date">${dateLine}</div>` : nothing}
-              </div>
-              ${showStandardCounter ? renderCounter(false) : nothing}
-            `}
+            ${pictureUrl ? this.renderPicture(pictureUrl) : this.renderIcon()}
+            <div class="info-block" id="info">
+              <div class="info-label">${leftTitle}</div>
+              ${leftDateResolved ? html`<div class="info-date">${leftDateResolved}</div>` : nothing}
+            </div>
+            ${counterNode}
           </div>
         </div>
       </ha-card>
@@ -205,6 +188,12 @@ class ItemCard extends BaseItemElement {
           flex: 1;
           min-width: 0;
         }
+
+        /*
+         * Three independent columns: icon | info | counter.
+         * align-items: center vertically centers each column as a whole,
+         * so a 2-line counter never "pulls" the label row out of alignment.
+         */
         .content {
           position: relative;
           display: flex;
@@ -215,25 +204,22 @@ class ItemCard extends BaseItemElement {
           min-width: 0;
           box-sizing: border-box;
           pointer-events: none;
-          gap: 6px;
+          gap: 8px;
         }
-        .info-text {
+
+        .info-block {
           display: flex;
           flex-direction: column;
           justify-content: center;
+          align-items: flex-start;
           gap: 1px;
           flex: 1 1 auto;
           min-width: 0;
+          align-self: center;
         }
-        .info-row {
-          display: flex;
-          align-items: baseline;
-          gap: 6px;
-          min-width: 0;
-        }
+
         .info-label {
-          flex: 1 1 auto;
-          min-width: 0;
+          max-width: 100%;
           font-size: calc(0.95rem * var(--trash-label-size));
           font-weight: 650;
           line-height: 1.2;
@@ -241,7 +227,9 @@ class ItemCard extends BaseItemElement {
           text-overflow: ellipsis;
           white-space: nowrap;
         }
+
         .info-date {
+          max-width: 100%;
           font-size: calc(0.78rem * var(--trash-date-size));
           line-height: 1.2;
           opacity: 0.8;
@@ -249,50 +237,52 @@ class ItemCard extends BaseItemElement {
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-        /* Standard: counter rechts — kompakt, nicht dominant */
-        .counter-badge {
+
+        /* Right column: own shrink-wrapped block, vertically centered in the card */
+        .counter-block {
           flex: 0 0 auto;
-          margin-left: auto;
+          align-self: center;
+          margin: 0;
           padding: 0;
           font-size: calc(0.82rem * var(--trash-counter-size));
           font-weight: 600;
           line-height: 1.15;
           letter-spacing: -0.01em;
           white-space: nowrap;
-          text-align: right;
+          text-align: center;
         }
-        .counter-badge.stacked,
-        .compact-counter.stacked {
+
+        /* "in"/"vor" centered over the day count within this block's width */
+        .counter-block.stacked {
           display: flex;
           flex-direction: column;
-          align-items: flex-end;
+          align-items: center;
           justify-content: center;
           gap: 0;
           line-height: 1.05;
           white-space: normal;
-          padding: 0;
         }
+
         .counter-prefix {
-          font-size: 0.85em;
+          display: block;
+          width: 100%;
+          text-align: center;
+          font-size: 0.82em;
           font-weight: 600;
           opacity: 0.85;
           line-height: 1.05;
         }
+
         .counter-rest {
+          display: block;
+          text-align: center;
           font-weight: 650;
-          line-height: 1.05;
-        }
-        .compact-counter {
-          flex: 0 0 auto;
-          font-size: calc(0.9em * var(--trash-counter-size));
-          font-weight: 600;
-          line-height: 1.15;
+          line-height: 1.1;
           white-space: nowrap;
-          opacity: 0.95;
-          padding: 0;
         }
+
         ha-card.compact-layout .content {
-          gap: 5px;
+          gap: 6px;
           min-height: 44px;
           padding: 5px 6px;
         }
@@ -305,21 +295,22 @@ class ItemCard extends BaseItemElement {
         ha-card.compact-layout hui-image {
           margin: -2px 0;
         }
+
         .vertical {
           flex-direction: column;
           text-align: center;
           justify-content: center;
+          gap: 4px;
         }
 
-        .vertical .info-text {
+        .vertical .info-block {
           width: 100%;
           flex: 0 0 auto;
           align-items: center;
         }
 
-        .vertical .counter-badge.stacked,
-        .vertical .compact-counter.stacked {
-          align-items: center;
+        .vertical .counter-block {
+          margin: 0;
         }
 
         ha-tile-icon,
@@ -333,6 +324,7 @@ class ItemCard extends BaseItemElement {
           padding: 2px;
           margin: -2px;
           flex: 0 0 auto;
+          align-self: center;
         }
 
         hui-image {
