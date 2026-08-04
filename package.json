@@ -37,7 +37,7 @@
     "@material/mwc-select": "0.27.0",
     "@material/mwc-textfield": "0.27.0",
     "color": "4.2.3",
-    "lit": "3.2.0",
+    "lit": "3.3.3",
     "luxon": "3.5.0",
     "memoize-one": "6.0.0",
     "sortablejs": "1.15.4",
@@ -76,7 +76,7 @@
     "typescript": "5.7.2"
   },
   "overrides": {
-    "lit": "3.2.0"
+    "lit": "3.3.3"
   },
   "browserslist": "> 0.25%, not dead"
 }
