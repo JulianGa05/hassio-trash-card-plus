@@ -115,18 +115,20 @@ class ItemCard extends BaseItemElement {
         `) :
       nothing;
 
-    const iconOrPicture = pictureUrl ? this.renderPicture(pictureUrl) : this.renderIcon();
-
-    // Vertical: icon+label on one row, divider, then date + relative countdown.
+    // Vertical: compact ha-icon (not ha-tile-icon) so icon+label center as one unit.
     if (isVertical) {
+      const verticalIcon = pictureUrl ?
+        html`<img class="vertical-icon" src=${pictureUrl} alt="" aria-hidden="true" />` :
+        html`<ha-icon class="vertical-icon" .icon=${item.icon}></ha-icon>`;
+
       return html`
         <ha-card style=${styleMap(style)} class=${classMap(cssClasses)}>
           <div class="background" aria-labelledby="info" ></div>
           <div class="container">
             <div class="content ${classMap(contentClasses)}" >
               <div class="vertical-header" id="info">
-                ${iconOrPicture}
-                <div class="info-label">${leftTitle}</div>
+                ${verticalIcon}
+                <span class="info-label">${leftTitle}</span>
               </div>
               <div class="vertical-divider" role="presentation"></div>
               <div class="vertical-meta">
@@ -138,6 +140,8 @@ class ItemCard extends BaseItemElement {
         </ha-card>
       `;
     }
+
+    const iconOrPicture = pictureUrl ? this.renderPicture(pictureUrl) : this.renderIcon();
 
     return html`
       <ha-card style=${styleMap(style)} class=${classMap(cssClasses)}>
@@ -327,44 +331,50 @@ class ItemCard extends BaseItemElement {
           padding: 8px 10px;
         }
 
+        /*
+         * Icon + label share one font-size so the icon scales with label_font_size.
+         * Fit-content width + margin auto = true centered group (no tile-icon chrome).
+         */
         .vertical-header {
-          display: inline-flex;
+          display: flex;
           flex-direction: row;
+          flex-wrap: nowrap;
           align-items: center;
           justify-content: center;
-          gap: 2px;
-          width: auto;
+          gap: 0.25em;
+          width: fit-content;
           max-width: 100%;
+          margin: 0 auto;
+          font-size: calc(0.95rem * var(--trash-label-size));
+          line-height: 1.15;
           min-width: 0;
         }
 
         .vertical-header .info-label {
-          flex: 0 0 auto;
+          flex: 0 1 auto;
           min-width: 0;
+          font-size: 1em;
+          font-weight: 650;
+          line-height: 1.15;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
-        /* Shrink the tile-icon footprint so glyph + label center as one unit */
-        .vertical ha-tile-icon {
-          --mdc-icon-size: 18px;
-          padding: 0;
-          margin: 0;
-          width: 20px;
-          height: 20px;
+        .vertical-header .vertical-icon {
           flex: 0 0 auto;
-          align-self: center;
-        }
-
-        .vertical hui-image {
-          width: 18px;
-          height: 18px;
-          margin: 0;
-          padding: 0;
+          --mdc-icon-size: 1.1em;
+          width: 1.1em;
+          height: 1.1em;
+          display: block;
+          object-fit: contain;
+          color: var(--tile-color, currentColor);
         }
 
         .vertical-divider {
           width: min(72%, 7.5rem);
           height: 1px;
-          margin: 7px 0 8px;
+          margin: 7px auto 8px;
           background: currentColor;
           opacity: 0.28;
           flex: 0 0 auto;
