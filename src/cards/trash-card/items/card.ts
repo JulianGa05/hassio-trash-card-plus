@@ -19,7 +19,16 @@ class ItemCard extends BaseItemElement {
     // eslint-disable-next-line prefer-destructuring
     const item = this.item;
 
-    const { color_mode, hide_time_range, day_style, layout, with_label, day_style_format, mobile_compact } = this.config;
+    const {
+      color_mode,
+      hide_time_range,
+      day_style,
+      layout,
+      with_label,
+      day_style_format,
+      mobile_compact,
+      info_layout
+    } = this.config;
 
     const { label, date } = item;
 
@@ -36,20 +45,22 @@ class ItemCard extends BaseItemElement {
       this.hass,
       compactMobile
     );
-    // Combined styles remain two lines: label above, countdown (optionally
-    // followed by the date) below. This keeps narrow card grids readable.
-    const content = parts.splitCounter ?
-      `${parts.counterText} · ${parts.dateLabel}` :
-      parts.fullLabel;
-
     const daysTillToday = daysTill(new Date(), date.start);
+    const useCompactLayout = info_layout === 'compact' || compactMobile;
+    const compactDate = useCompactLayout ?
+      getDateParts(item, hide_time_range ?? false, 'default', undefined, this.hass, compactMobile).dateLabel :
+      undefined;
+    const content = useCompactLayout ?
+      compactDate :
+      (parts.splitCounter ? parts.dateLabel : parts.fullLabel);
+    const showCounter = daysTillToday !== 0 && (useCompactLayout || parts.splitCounter);
 
     const cssClasses = {
       today: daysTillToday === 0,
       tomorrow: daysTillToday === 1,
       another: daysTillToday > 1,
       past: Boolean(item.isPast) || daysTillToday < 0,
-      'compact-mobile': compactMobile
+      'compact-layout': useCompactLayout
     };
 
     const pictureUrl = this.getPictureUrl();
@@ -70,6 +81,9 @@ class ItemCard extends BaseItemElement {
               .secondary=${with_label ? content : undefined}
               .multiline=${true}
             ></ha-tile-info>
+            ${showCounter ? html`
+              <div class="counter-badge" aria-hidden="true">${parts.counterText}</div>
+            ` : nothing}
           </div>
         </div>
       </ha-card>
@@ -139,18 +153,42 @@ class ItemCard extends BaseItemElement {
           pointer-events: none;
           gap: 10px;
         }
+        .counter-badge {
+          flex: 0 0 auto;
+          margin-left: auto;
+          padding-left: 8px;
+          font-size: 1.45em;
+          font-weight: 700;
+          line-height: 1.1;
+          white-space: nowrap;
+          text-align: right;
+        }
+        ha-card.compact-layout .content {
+          gap: 8px;
+          min-height: 56px;
+          padding: 8px;
+        }
+        ha-card.compact-layout .counter-badge {
+          align-self: flex-start;
+          margin-top: 3px;
+          padding-left: 4px;
+          font-size: 0.98em;
+          font-weight: 650;
+        }
+        ha-card.compact-layout ha-tile-icon {
+          padding: 2px;
+          margin: -2px;
+        }
+        ha-card.compact-layout hui-image {
+          margin: -4px 0;
+        }
+        ha-card.compact-layout ha-tile-info {
+          font-size: 0.94em;
+        }
         @media (max-width: 600px) {
-          ha-card.compact-mobile .content {
-            gap: 8px;
-            min-height: 56px;
-            padding: 8px;
-          }
-          ha-card.compact-mobile ha-tile-icon {
+          ha-card.compact-layout ha-tile-icon {
             transform: scale(0.9);
             transform-origin: center;
-          }
-          ha-card.compact-mobile ha-tile-info {
-            font-size: 0.94em;
           }
         }
         .vertical {
@@ -172,15 +210,15 @@ class ItemCard extends BaseItemElement {
           -webkit-user-select: none;
           -moz-user-select: none;
           position: relative;
-          padding: 2px;
-          margin: -2px;
+          padding: 6px;
+          margin: -6px;
           flex: 0 0 auto;
         }
 
         hui-image {
           width: 24px;
           height: 24px;
-          margin: -4px 0px;
+          margin: -12px 0px;
         }
 
         hui-image img {

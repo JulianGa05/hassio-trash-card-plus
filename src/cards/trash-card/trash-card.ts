@@ -43,6 +43,7 @@ const configDefaults = {
   },
   with_label: true,
   mobile_compact: true,
+  info_layout: 'standard' as const,
   debug: false
 };
 

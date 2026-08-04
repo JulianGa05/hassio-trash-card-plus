@@ -48,6 +48,11 @@ const SORTMODES = [
   'pattern_grid'
 ] as const;
 
+const INFOLAYOUTS = [
+  'standard',
+  'compact'
+] as const;
+
 interface TrashCardConfig {
   entities?: string[];
   pattern?: ItemSettings[];
@@ -78,6 +83,8 @@ interface TrashCardConfig {
   sort_by?: typeof SORTMODES[number];
   /** Use a denser presentation on narrow screens. */
   mobile_compact?: boolean;
+  /** Card information arrangement on non-mobile screens. */
+  info_layout?: typeof INFOLAYOUTS[number];
   day_style?: typeof DAYSTYLES[number];
   day_style_format?: string;
   card_style?: typeof CARDSTYLES[number];
@@ -123,6 +130,10 @@ const entityCardConfigStruct = assign(
       literal(SORTMODES[2])
     ])),
     mobile_compact: optional(boolean()),
+    info_layout: optional(union([
+      literal(INFOLAYOUTS[0]),
+      literal(INFOLAYOUTS[1])
+    ])),
     day_style: optional(union([
       literal(DAYSTYLES[0]),
       literal(DAYSTYLES[1]),
@@ -161,7 +172,8 @@ export {
   ALIGNMENTSTYLES,
   LAYOUTS,
   LAYOUT_ICONS,
-  SORTMODES
+  SORTMODES,
+  INFOLAYOUTS
 };
 
 export type {

@@ -126,6 +126,7 @@ This fork extends the upstream card with:
 | `past_days` | number | `60` | How far back to search for the most recent collection. |
 | `sort_by` | `date`, `pattern`, or `pattern_grid` | `date` | Chronological order, fixed pattern columns, or a normal grid sorted by pattern. |
 | `mobile_compact` | boolean | `true` | Use less padding, compact icons, and shorter dates on narrow screens. The grid uses at most two columns. |
+| `info_layout` | `standard` or `compact` | `standard` | Standard shows a large counter on the right; compact shows label and counter above the date. |
 | `day_style`            | `default`, `counter`, `weekday`, `custom`, `date_and_counter`, or `weekday_and_counter` | `default`   | Defines the displayed event time. The combined styles show a date and countdown. |
 | `card_style`            | `card`, `chip` or `icon` | `card`   | Switch between the events style `Standard card`, `Chip card` or a new `Icon` predefined layout. |
 | `alignment_style`            | `left`, `center`, `right` or `space` | `left`   | Switch between alignments on `Chip card` card_style. |

@@ -1,4 +1,4 @@
-import { CARDSTYLES, ALIGNMENTSTYLES, COLORMODES, DAYSTYLES, LAYOUTS, LAYOUT_ICONS, SORTMODES } from './trash-card-config';
+import { CARDSTYLES, ALIGNMENTSTYLES, COLORMODES, DAYSTYLES, LAYOUTS, LAYOUT_ICONS, SORTMODES, INFOLAYOUTS } from './trash-card-config';
 
 import type { LocalizeFunc } from '../../utils/ha';
 import type { TrashCardConfig } from './trash-card-config';
@@ -189,6 +189,22 @@ const getSchema = (customLocalize: LocalizeFunc, currentValues: TrashCardConfig,
                 options: [ ...DAYSTYLES ].map(control => ({
                   value: control,
                   label: customLocalize(`editor.form.day_style.values.${control}`)
+                })),
+                mode: 'dropdown'
+              }
+            }
+          }] as HaFormSchema[] :
+          [],
+        ...currentValues.card_style === 'card' ?
+          [{
+            name: 'info_layout',
+            label: customLocalize(`editor.form.info_layout.title`),
+            helper: customLocalize(`editor.form.info_layout.helper`),
+            selector: {
+              select: {
+                options: [ ...INFOLAYOUTS ].map(layout => ({
+                  value: layout,
+                  label: customLocalize(`editor.form.info_layout.values.${layout}`)
                 })),
                 mode: 'dropdown'
               }

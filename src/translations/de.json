@@ -45,6 +45,14 @@
                     "icon": "Symbol"
                 }
             },
+            "info_layout": {
+                "title": "Karteninformationen",
+                "helper": "Standard zeigt bei „Datum und Tage bis“ den Counter groß rechts. Kompakt zeigt oben Bezeichnung und Counter, darunter das Datum.",
+                "values": {
+                    "standard": "Standard",
+                    "compact": "Kompakt (zwei Zeilen)"
+                }
+            },
             "layout_picker": {
                 "values": {
                     "default": "Standard Layout",

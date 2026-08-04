@@ -45,6 +45,14 @@
                     "icon": "Icon"
                 }
             },
+            "info_layout": {
+                "title": "Card information",
+                "helper": "Standard shows a large right-aligned counter for “Date and days to”. Compact shows the label and counter above the date.",
+                "values": {
+                    "standard": "Standard",
+                    "compact": "Compact (two lines)"
+                }
+            },
             "layout_picker": {
                 "values": {
                     "default": "Default layout",
